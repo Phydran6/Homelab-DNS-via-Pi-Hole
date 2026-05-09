@@ -295,6 +295,10 @@ sudo pihole-FTL sqlite3 /etc/pihole/gravity.db \
 
 **`pihole reloaddns` zeigt readonly-variable Warning?** → Bekannter, harmloser Bug in v6.6.x. Cache wird trotzdem geflusht.
 
+## Changelog
+
+Siehe [CHANGELOG.md](CHANGELOG.md).
+
 ## Lizenz
 
 MIT — siehe LICENSE (falls vorhanden).
