@@ -1,6 +1,6 @@
 # Pi-hole-Konfiguration
 
-Diese `pihole.toml` ist die Hauptkonfiguration der Pi-hole-Instanz auf `192.168.179.30`. Pi-hole v6 verwaltet alle Settings (außer Domain-/Adlists und Clients, die in `gravity.db` liegen) in einer einzigen TOML-Datei.
+Diese `pihole.toml` ist die Hauptkonfiguration der Pi-hole-Instanz auf `10.0.0.30`. Pi-hole v6 verwaltet alle Settings (außer Domain-/Adlists und Clients, die in `gravity.db` liegen) in einer einzigen TOML-Datei.
 
 ## Wichtige eigene Anpassungen gegenüber dem Default
 
@@ -41,13 +41,13 @@ Reverse-Lookups für private IP-Ranges, die nicht in `/etc/hosts` oder DHCP-Leas
 
 ### `[dns]` — Lokale Hostnamen
 
-Unter `dns.hosts` sind die `*.phytech.de`-Einträge gepflegt:
+Unter `dns.hosts` sind die `*.yourdomain.tld`-Einträge gepflegt:
 
 ```toml
 hosts = [
-  "192.168.179.20 heimdall.phytech.de",
-  "192.168.179.20 nas2.phytech.de",
-  "192.168.179.20 omv.phytech.de",
+  "10.0.0.20 heimdall.yourdomain.tld",
+  "10.0.0.20 nas2.yourdomain.tld",
+  "10.0.0.20 omv.yourdomain.tld",
   ...
 ]
 ```
@@ -57,10 +57,10 @@ Format: `<IP> <FQDN>`. Subdomains lokal aufzulösen ist sauberer als sie über P
 ### `[dns.revServers]` — Conditional Forwarding
 
 ```toml
-revServers = ["true,192.168.179.0/25,192.168.179.1,fritz.box"]
+revServers = ["true,10.0.0.0/25,10.0.0.1,fritz.box"]
 ```
 
-Anfragen für `*.fritz.box` und Reverse-Lookups im `192.168.179.0/25`-Bereich werden an die Fritz!Box geforwardet, damit DHCP-Hostnamen wie `mein-laptop.fritz.box` aufgelöst werden.
+Anfragen für `*.fritz.box` und Reverse-Lookups im `10.0.0.0/25`-Bereich werden an die Fritz!Box geforwardet, damit DHCP-Hostnamen wie `mein-laptop.fritz.box` aufgelöst werden.
 
 ### `[dns]` — ESNI blockieren
 
@@ -93,7 +93,7 @@ Die `gravity.db` (nicht hier im Repo aus Privacy-Gründen) enthält:
 
 ### Regex-Allow
 
-Aktuell deaktiviert. War früher `(\.|^)phytech\.de$` zur Sicherstellung, dass die eigene Domain nicht durch Adlists geblockt wird.
+Aktuell deaktiviert. War früher `(\.|^)yourdomain\.tld$` zur Sicherstellung, dass die eigene Domain nicht durch Adlists geblockt wird.
 
 ### Groups
 
@@ -102,10 +102,10 @@ Aktuell deaktiviert. War früher `(\.|^)phytech\.de$` zur Sicherstellung, dass d
 
 ## Hintergrund: Warum der AAAA-Block?
 
-Das LAN nutzt kein IPv6. Trotzdem hat der Provider `phytech.de` öffentliche AAAA-Records, und viele Anwendungen bevorzugen IPv6 (Linux glibc, Docker). Konsequenz ohne diesen Block:
+Das LAN nutzt kein IPv6. Trotzdem hat der Provider `yourdomain.tld` öffentliche AAAA-Records, und viele Anwendungen bevorzugen IPv6 (Linux glibc, Docker). Konsequenz ohne diesen Block:
 
-1. Container/Tool fragt `heimdall.phytech.de`
-2. Resolver liefert AAAA `2a01:238:20a:202:1090::`
+1. Container/Tool fragt `heimdall.yourdomain.tld`
+2. Resolver liefert AAAA `2001:db8::1`
 3. Anwendung versucht IPv6 → Timeout (kein IPv6-Stack im Container)
 4. Manche Anwendungen fallen auf A zurück, viele nicht
 
@@ -121,8 +121,8 @@ Vor dem Übernehmen der `pihole.toml` mindestens prüfen/anpassen:
 |---------|------|--------------|
 | `dns.upstreams` | `127.0.0.1#5335` | nur ändern wenn kein Unbound |
 | `dns.interface` | `eth0` | ggf. `wlan0` |
-| `dns.hosts` | phytech.de-Hostnamen | eigene Hostnamen |
-| `dns.revServers` | `192.168.179.0/25` + Fritz!Box | eigenes Subnetz/Router |
+| `dns.hosts` | yourdomain.tld-Hostnamen | eigene Hostnamen |
+| `dns.revServers` | `10.0.0.0/25` + Fritz!Box | eigenes Subnetz/Router |
 | `webserver.api.pwhash` | leer | per `pihole setpassword` setzen |
 
 ## Konfig live anwenden

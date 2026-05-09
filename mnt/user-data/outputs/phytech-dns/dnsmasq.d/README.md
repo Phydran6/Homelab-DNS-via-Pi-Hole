@@ -8,25 +8,25 @@ Die Hauptlösung für den AAAA-Block ist die Pi-hole-Regex `.*;querytype=AAAA;re
 
 - Greift auch wenn die Regex-Regel aus der `gravity.db` versehentlich gelöscht oder deaktiviert wird.
 - Greift, sobald `dnsmasq` läuft — auch wenn Pi-hole-FTL gerade neu lädt.
-- Ist enger gefasst (nur `phytech.de`) und damit unkritisch für andere Domains im Netz.
+- Ist enger gefasst (nur `yourdomain.tld`) und damit unkritisch für andere Domains im Netz.
 
 ## Dateien
 
 ### `99-block-aaaa.conf`
 
 ```
-address=/.phytech.de/::0
+address=/.yourdomain.tld/::0
 ```
 
-Setzt für **alle Subdomains von `phytech.de`** den AAAA-Record auf `::` (IPv6-Null-Adresse). Dnsmasq antwortet bei AAAA-Anfragen direkt damit, ohne Upstream zu fragen.
+Setzt für **alle Subdomains von `yourdomain.tld`** den AAAA-Record auf `::` (IPv6-Null-Adresse). Dnsmasq antwortet bei AAAA-Anfragen direkt damit, ohne Upstream zu fragen.
 
 ### `99-noipv6.conf`
 
 ```
-address=/phytech.de/::
+address=/yourdomain.tld/::
 ```
 
-Macht dasselbe für die Apex-Domain `phytech.de` selbst (ohne Subdomain-Prefix).
+Macht dasselbe für die Apex-Domain `yourdomain.tld` selbst (ohne Subdomain-Prefix).
 
 ## Hinweis zum Verhalten
 
@@ -44,15 +44,15 @@ sudo pihole reloaddns
 ## Test
 
 ```bash
-dig phytech.de AAAA           @192.168.179.30   # → :: oder NODATA
-dig heimdall.phytech.de AAAA  @192.168.179.30   # → NODATA (durch Pi-hole-Regex)
-                                                  #   oder :: (durch dieses Snippet)
-dig heimdall.phytech.de A     @192.168.179.30   # → 192.168.179.20 (unverändert)
+dig yourdomain.tld AAAA           @10.0.0.30   # → :: oder NODATA
+dig heimdall.yourdomain.tld AAAA  @10.0.0.30   # → NODATA (durch Pi-hole-Regex)
+                                                 #   oder :: (durch dieses Snippet)
+dig heimdall.yourdomain.tld A     @10.0.0.30   # → 10.0.0.20 (unverändert)
 ```
 
 ## Anpassung für andere Domains
 
-Statt `phytech.de` einfach die eigene Domain einsetzen:
+Statt `yourdomain.tld` einfach die eigene Domain einsetzen:
 
 ```
 address=/.deinedomain.de/::0
