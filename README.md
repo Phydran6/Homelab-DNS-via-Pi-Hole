@@ -34,11 +34,13 @@ Dieses Repo enthält die laufende DNS-Konfiguration meines Heimnetzes inklusive 
 Homelab-DNS-via-Pi-Hole/
 ├── README.md              ← diese Datei (Komplett-Setup)
 ├── CHANGELOG.md
-├── pihole.toml            ← Hauptkonfiguration (anonymisiert)
-├── 99-block-aaaa.conf     ← Failsafe AAAA-Block für *.example.lan
-├── 99-noipv6.conf         ← Failsafe AAAA-Block für example.lan
+├── pihole/
+│   ├── pihole.toml        ← Hauptkonfiguration (anonymisiert)
+│   ├── 99-block-aaaa.conf ← Failsafe AAAA-Block für *.example.lan
+│   └── 99-noipv6.conf     ← Failsafe AAAA-Block für example.lan
 └── backup/
-    └── README.md          ← automatisches Backup via n8n → SharePoint
+    ├── README.md          ← automatisches Backup via n8n → SharePoint
+    └── pihole-backup-workflow.json ← importierbarer n8n-Workflow
 ```
 
 ## Architektur-Überblick
@@ -203,6 +205,7 @@ sudo cp /etc/pihole/pihole.toml /etc/pihole/pihole.toml.bak
 # Eigene Konfig einspielen (vorher pihole.toml an dein Netz anpassen!)
 sudo cp pihole/pihole.toml /etc/pihole/pihole.toml
 
+
 # Pihole starten
 sudo systemctl start pihole-FTL
 ```
@@ -260,7 +263,7 @@ Mehr Details inklusive Hintergrund: [pihole/README.md](pihole/README.md).
 Die `dnsmasq.d/`-Snippets sind ein zusätzlicher Schutz, falls Pi-hole nicht läuft oder die Regex-Regel verloren geht. Beschreibung: [dnsmasq.d/README.md](dnsmasq.d/README.md).
 
 ```bash
-sudo cp dnsmasq.d/*.conf /etc/dnsmasq.d/
+sudo cp pihole/99-*.conf /etc/dnsmasq.d/
 sudo pihole reloaddns
 ```
 
