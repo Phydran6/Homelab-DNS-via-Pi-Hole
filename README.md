@@ -1,8 +1,31 @@
-# homelab-dns
+# Homelab-DNS-via-Pi-Hole
 
 Pi-hole + Unbound DNS-Setup für `example.lan` auf einem Raspberry Pi 5 (16 GB) mit Raspberry Pi OS Lite (64-bit).
 
 Dieses Repo enthält die laufende DNS-Konfiguration meines Heimnetzes inklusive lokaler Hostnamen-Auflösung für `*.example.lan`, netzweitem Block aller AAAA-Anfragen (kein IPv6 im Netz) und Conditional Forwarding zur Fritz!Box.
+
+## Inhalt
+
+- [Repo-Struktur](#repo-struktur)
+- [Architektur-Überblick](#architektur-überblick)
+- [Komplett-Setup von 0 auf 100%](#komplett-setup-von-0-auf-100)
+  - [0. Hardware & Voraussetzungen](#0-hardware--voraussetzungen)
+  - [1. Pi OS Lite installieren](#1-pi-os-lite-installieren)
+  - [2. Erstes SSH und Updates](#2-erstes-ssh-und-updates)
+  - [3. Statische IP sicherstellen](#3-statische-ip-sicherstellen)
+  - [4. Unbound installieren](#4-unbound-installieren-rekursiver-resolver)
+  - [5. Pi-hole installieren](#5-pi-hole-installieren)
+  - [6. Pi-hole-Konfiguration übernehmen](#6-pi-hole-konfiguration-aus-diesem-repo-übernehmen)
+  - [7. Lokale Hostnamen](#7-lokale-hostnamen-für-examplelan)
+  - [8. Conditional Forwarding](#8-conditional-forwarding-zur-fritzbox)
+  - [9. AAAA-Block aktivieren](#9-aaaa-block-aktivieren-kernpunkt-dieses-repos)
+  - [10. dnsmasq-Failsafe-Snippets](#10-optional-dnsmasq-failsafe-snippets)
+  - [11. Router umstellen](#11-router-umstellen)
+  - [12. Verifikation](#12-verifikation)
+- [Wartung](#wartung)
+- [Troubleshooting](#troubleshooting)
+- [Changelog](#changelog)
+- [Lizenz](#lizenz)
 
 ## Repo-Struktur
 
@@ -38,10 +61,12 @@ Clients ─► Pi-hole (Pi5, 192.168.1.10) ─► Unbound (127.0.0.1:5335) ─�
 
 ### 0. Hardware & Voraussetzungen
 
-- Raspberry Pi 5 (4 GB reichen, 8/16 GB Luxus)
-- microSD-Karte (mindestens 16 GB, Klasse A1 oder besser)
-- Netzteil 27 W (offizielles Pi 5 Netzteil empfohlen)
-- Ethernet-Kabel zur Fritz!Box
+> Ein Raspberry Pi 5 als reiner DNS-Server ist wie ein Ferrari als Einkaufswagen — technisch maßlos überdimensioniert. Du kaufst trotzdem die 16-GB-Variante. Wir alle wissen es. Kein Urteil hier.
+
+- [Raspberry Pi 5](https://www.amazon.de/s?k=Raspberry+Pi+5) — 4 GB reichen, 8/16 GB Luxus
+- [microSD-Karte](https://www.amazon.de/s?k=microSD+A2+32GB) — mindestens 16 GB, Klasse A1 oder besser
+- [Netzteil 27 W](https://www.amazon.de/s?k=Raspberry+Pi+5+Netzteil+27W) — offizielles Pi 5 Netzteil empfohlen
+- [Ethernet-Kabel](https://www.amazon.de/s?k=Ethernet+Kabel+Cat7) — zur Fritz!Box
 - Ein Rechner mit dem Raspberry Pi Imager
 - Statische IP-Reservierung für den Pi auf der Fritz!Box (hier `192.168.1.10`)
 
