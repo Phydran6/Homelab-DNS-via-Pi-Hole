@@ -1,0 +1,189 @@
+{
+  "name": "Pi-hole Backup → SharePoint",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 3 * * *"
+            }
+          ]
+        }
+      },
+      "id": "a1b2c3d4-0001-0001-0001-000000000001",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "resource": "command",
+        "command": "find /tmp -maxdepth 1 -name 'pi-hole_*_teleporter_*.zip' -mtime +1 -delete && echo 'cleanup done'"
+      },
+      "id": "a1b2c3d4-0001-0001-0001-000000000002",
+      "name": "SSH Cleanup",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [460, 300],
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "pihole-backup-ssh"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "command",
+        "command": "sudo pihole-FTL --teleporter",
+        "workingDirectory": "/tmp"
+      },
+      "id": "a1b2c3d4-0001-0001-0001-000000000003",
+      "name": "SSH Teleporter",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [680, 300],
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "pihole-backup-ssh"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "download",
+        "path": "=/tmp/{{ $json.stdout.trim() }}",
+        "binaryPropertyName": "data"
+      },
+      "id": "a1b2c3d4-0001-0001-0001-000000000004",
+      "name": "SSH Download",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [900, 300],
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "pihole-backup-ssh"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://REPLACE_TENANT.sharepoint.com/sites/REPLACE_SITE/_api/web/GetFolderByServerRelativeUrl('/sites/REPLACE_SITE/REPLACE_LIBRARY/REPLACE_FOLDER')/Files/add(url='{{ $binary.data.fileName }}',overwrite=true)",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "microsoftSharePointOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json;odata=verbose"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data"
+      },
+      "id": "a1b2c3d4-0001-0001-0001-000000000005",
+      "name": "SharePoint Upload",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1120, 300],
+      "credentials": {
+        "microsoftSharePointOAuth2Api": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "SharePoint OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "REPLACE_TELEGRAM_CHAT_ID",
+        "text": "=✅ <b>Pi-hole Backup</b>\n📄 <code>{{ $json.d.Name }}</code>\n📦 {{ ($json.d.Length / 1024).toFixed(1) }} KB\n📅 {{ $now.format('dd.MM.yyyy HH:mm') }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "a1b2c3d4-0001-0001-0001-000000000006",
+      "name": "Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1340, 300],
+      "credentials": {
+        "telegramApi": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "Telegram Bot"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "SSH Cleanup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SSH Cleanup": {
+      "main": [
+        [
+          {
+            "node": "SSH Teleporter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SSH Teleporter": {
+      "main": [
+        [
+          {
+            "node": "SSH Download",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SSH Download": {
+      "main": [
+        [
+          {
+            "node": "SharePoint Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SharePoint Upload": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}

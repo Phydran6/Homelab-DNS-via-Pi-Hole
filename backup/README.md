@@ -25,6 +25,12 @@ SharePoint-Ordner hochgeladen. Telegram-Benachrichtigung als Statusmeldung.
 - [Troubleshooting](#troubleshooting)
 - [Sicherheit](#sicherheit)
 
+## Workflow importieren
+
+Die Datei [`pihole-backup-workflow.json`](pihole-backup-workflow.json) enthält den fertigen n8n-Workflow zum direkten Import.
+
+**n8n UI:** *Workflows → Import from file* → JSON auswählen → danach alle `REPLACE_*`-Platzhalter in den Knoten-Credentials und der SharePoint-URL ersetzen → Workflow aktivieren.
+
 ## Architektur
 
 ```
