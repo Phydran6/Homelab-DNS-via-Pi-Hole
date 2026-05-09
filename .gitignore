@@ -1,2 +1,20 @@
 .claude/
 mnt/
+
+# SSH-Keys / Secrets
+*.pem
+*.key
+id_*
+n8n_pihole_backup*
+
+# n8n exports mit Credentials
+*credentials*.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp

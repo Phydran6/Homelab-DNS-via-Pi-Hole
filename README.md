@@ -8,6 +8,7 @@ Dieses Repo enthält die laufende DNS-Konfiguration meines Heimnetzes inklusive 
 
 - [Repo-Struktur](#repo-struktur)
 - [Architektur-Überblick](#architektur-überblick)
+- [Automatisches Backup (n8n → SharePoint)](backup/README.md)
 - [Komplett-Setup von 0 auf 100%](#komplett-setup-von-0-auf-100)
   - [0. Hardware & Voraussetzungen](#0-hardware--voraussetzungen)
   - [1. Pi OS Lite installieren](#1-pi-os-lite-installieren)
@@ -30,15 +31,14 @@ Dieses Repo enthält die laufende DNS-Konfiguration meines Heimnetzes inklusive 
 ## Repo-Struktur
 
 ```
-homelab-dns/
+Homelab-DNS-via-Pi-Hole/
 ├── README.md              ← diese Datei (Komplett-Setup)
-├── pihole/
-│   ├── README.md          ← Pi-hole-Konfig erklärt
-│   └── pihole.toml        ← Hauptkonfiguration (anonymisiert)
-└── dnsmasq.d/
-    ├── README.md          ← dnsmasq-Snippets erklärt
-    ├── 99-block-aaaa.conf ← Failsafe AAAA-Block für *.example.lan
-    └── 99-noipv6.conf     ← Failsafe AAAA-Block für example.lan
+├── CHANGELOG.md
+├── pihole.toml            ← Hauptkonfiguration (anonymisiert)
+├── 99-block-aaaa.conf     ← Failsafe AAAA-Block für *.example.lan
+├── 99-noipv6.conf         ← Failsafe AAAA-Block für example.lan
+└── backup/
+    └── README.md          ← automatisches Backup via n8n → SharePoint
 ```
 
 ## Architektur-Überblick

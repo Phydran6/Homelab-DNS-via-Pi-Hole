@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-05-09
+
+### Added
+- `backup/README.md` — automatisches Pi-hole-Backup via n8n → SharePoint mit Telegram-Benachrichtigung
+- `.gitignore` um SSH-Keys, n8n-Credentials und Editor-Dateien erweitert
+- Link zum Backup-Guide im Hauptinhaltsverzeichnis und in der Repo-Struktur
+
 ## [1.1.0] - 2026-05-09
 
 ### Changed
