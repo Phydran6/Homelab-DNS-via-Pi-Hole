@@ -131,41 +131,9 @@
   # Allowed values are:
   #     Array of custom DNS records each one in HOSTS form: "IP HOSTNAME [HOSTNAME ...]"
   hosts = [
-    "192.168.179.20 npm.phytech.de",
-    "192.168.179.20 dns.phytech.de",
-    "192.168.179.20 pass.phytech.de",
-    "192.168.179.20 emby.phytech.de",
-    "192.168.179.20 nas1.phytech.de",
-    "192.168.179.20 nas3.phytech.de",
-    "192.168.179.20 nas4.phytech.de",
-    "192.168.179.20 rmm.phytech.de",
-    "192.168.179.20 api.phytech.de",
-    "192.168.179.20 mesh.phytech.de",
-    "192.168.179.20 heimdall.phytech.de",
-    "192.168.179.6 3cx.phytech.de",
-    "192.168.179.20 it-tools.phytech.de",
-    "192.168.179.20 sectumsempra.phytech.de",
-    "192.168.179.20 lumos.phytech.de",
-    "192.168.179.20 wlc.phytech.de",
-    "192.168.179.20 utk.phytech.de",
-    "192.168.179.20 www.phytech.de",
-    "192.168.179.20 phytech.de",
-    "192.168.179.20 pt.phytech.de",
-    "192.168.179.20 n8n.phytech.de",
-    "192.168.179.20 homebox.phytech.de",
-    "192.168.179.20 ha.phytech.de",
-    "192.168.179.20 logbot.phytech.de",
-    "192.168.179.14 unifi.fritz.box",
-    "192.168.179.14 unifi.phytech.de",
-    "192.168.179.20 vpn.phytech.de",
-    ":: pt.phytech.de",
-    "192.168.179.20 ocr.phytech.de",
-    "192.168.179.20 omv.phytech.de",
-    "192.168.179.20 nas2.phytech.de",
-    "192.168.179.20 dms.phytech.de",
-    "192.168.179.20 plex.phytech.de",
-    "192.168.179.20 print.phytech.de",
-    "192.168.179.20 tt.phytech.de"
+    "192.168.1.20 heimdall.example.lan",
+    "192.168.1.20 nas.example.lan",
+    "192.168.1.20 vpn.example.lan"
   ] ### CHANGED, default = []
 
   # If set, queries for plain names, without dots or domain parts, are never forwarded to
@@ -308,7 +276,7 @@
   #     - "<domain>": Domain used for the reverse server feature (e.g., "fritz.box")
   #     Example: "fritz.box"
   revServers = [
-    "true,192.168.179.0/25,192.168.179.1,fritz.box"
+    "true,192.168.1.0/24,192.168.1.1,fritz.box"
   ] ### CHANGED, default = []
 
   [dns.domain]

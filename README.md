@@ -1,30 +1,30 @@
-# phytech-dns
+# homelab-dns
 
-Pi-hole + Unbound DNS-Setup für `phytech.de` auf einem Raspberry Pi 5 (16 GB) mit Raspberry Pi OS Lite (64-bit).
+Pi-hole + Unbound DNS-Setup für `example.lan` auf einem Raspberry Pi 5 (16 GB) mit Raspberry Pi OS Lite (64-bit).
 
-Dieses Repo enthält die laufende DNS-Konfiguration meines Heimnetzes inklusive lokaler Hostnamen-Auflösung für `*.phytech.de`, netzweitem Block aller AAAA-Anfragen (kein IPv6 im Netz) und Conditional Forwarding zur Fritz!Box.
+Dieses Repo enthält die laufende DNS-Konfiguration meines Heimnetzes inklusive lokaler Hostnamen-Auflösung für `*.example.lan`, netzweitem Block aller AAAA-Anfragen (kein IPv6 im Netz) und Conditional Forwarding zur Fritz!Box.
 
 ## Repo-Struktur
 
 ```
-phytech-dns/
+homelab-dns/
 ├── README.md              ← diese Datei (Komplett-Setup)
 ├── pihole/
 │   ├── README.md          ← Pi-hole-Konfig erklärt
 │   └── pihole.toml        ← Hauptkonfiguration (anonymisiert)
 └── dnsmasq.d/
     ├── README.md          ← dnsmasq-Snippets erklärt
-    ├── 99-block-aaaa.conf ← Failsafe AAAA-Block für *.phytech.de
-    └── 99-noipv6.conf     ← Failsafe AAAA-Block für phytech.de
+    ├── 99-block-aaaa.conf ← Failsafe AAAA-Block für *.example.lan
+    └── 99-noipv6.conf     ← Failsafe AAAA-Block für example.lan
 ```
 
 ## Architektur-Überblick
 
 ```
-Clients ─► Pi-hole (Pi5, 192.168.179.30) ─► Unbound (127.0.0.1:5335) ─► Root-Server
+Clients ─► Pi-hole (Pi5, 192.168.1.10) ─► Unbound (127.0.0.1:5335) ─► Root-Server
                 │
-                ├─ Lokale Hostnamen für *.phytech.de
-                ├─ Conditional Forwarding für fritz.box → 192.168.179.1
+                ├─ Lokale Hostnamen für *.example.lan
+                ├─ Conditional Forwarding für fritz.box → 192.168.1.1
                 └─ Regex-Block: alle AAAA-Queries → NODATA
 ```
 
@@ -43,7 +43,7 @@ Clients ─► Pi-hole (Pi5, 192.168.179.30) ─► Unbound (127.0.0.1:5335) ─
 - Netzteil 27 W (offizielles Pi 5 Netzteil empfohlen)
 - Ethernet-Kabel zur Fritz!Box
 - Ein Rechner mit dem Raspberry Pi Imager
-- Statische IP-Reservierung für den Pi auf der Fritz!Box (hier `192.168.179.30`)
+- Statische IP-Reservierung für den Pi auf der Fritz!Box (hier `192.168.1.10`)
 
 ### 1. Pi OS Lite installieren
 
@@ -66,7 +66,7 @@ Clients ─► Pi-hole (Pi5, 192.168.179.30) ─► Unbound (127.0.0.1:5335) ─
 Vom eigenen Rechner aus:
 
 ```bash
-ssh pihole@192.168.179.30
+ssh pihole@192.168.1.10
 ```
 
 Im Pi:
@@ -79,7 +79,7 @@ sudo reboot
 
 ### 3. Statische IP sicherstellen
 
-Empfohlen: Statisches DHCP-Lease in der Fritz!Box setzen statt IP auf dem Pi zu hardcoden. So ist der Pi immer unter `192.168.179.30` erreichbar.
+Empfohlen: Statisches DHCP-Lease in der Fritz!Box setzen statt IP auf dem Pi zu hardcoden. So ist der Pi immer unter `192.168.1.10` erreichbar.
 
 Fritz!Box-UI → **Heimnetz → Netzwerk → Netzwerkverbindungen** → Pi auswählen → "Diesem Netzwerkgerät immer die gleiche IPv4-Adresse zuweisen" anhaken.
 
@@ -158,7 +158,7 @@ Am Ende notiert der Installer das Web-Admin-Passwort. Aufschreiben oder gleich n
 pihole setpassword
 ```
 
-Web-UI: `http://192.168.179.30/admin`
+Web-UI: `http://192.168.1.10/admin`
 
 ### 6. Pi-hole-Konfiguration aus diesem Repo übernehmen
 
@@ -166,8 +166,8 @@ Der einfachste Weg: relevante Settings über die Web-UI nachziehen (siehe [pihol
 
 ```bash
 # Repo klonen
-git clone https://github.com/<dein-user>/phytech-dns.git
-cd phytech-dns
+git clone https://github.com/<dein-user>/homelab-dns.git
+cd homelab-dns
 
 # Pihole stoppen
 sudo systemctl stop pihole-FTL
@@ -184,14 +184,14 @@ sudo systemctl start pihole-FTL
 
 Wichtig: Die `pihole.toml` enthält netzwerkspezifische Werte (IPs, Hostnamen, Web-Passwort-Hash). Vor dem Übernehmen anpassen — Details im [pihole/README.md](pihole/README.md).
 
-### 7. Lokale Hostnamen für *.phytech.de
+### 7. Lokale Hostnamen für *.example.lan
 
 Diese sind in der `pihole.toml` unter `dns.hosts` hinterlegt. Beispiel:
 
 ```toml
 hosts = [
-  "192.168.179.20 heimdall.phytech.de",
-  "192.168.179.20 nas2.phytech.de",
+  "192.168.1.20 heimdall.example.lan",
+  "192.168.1.20 nas2.example.lan",
   ...
 ]
 ```
@@ -205,7 +205,7 @@ Damit Geräte mit Fritz!Box-Hostname (`*.fritz.box`) aufgelöst werden:
 Web-UI → **Settings → DNS → Conditional Forwarding** (in v6: **All Settings → dns.revServers**):
 
 ```
-true,192.168.179.0/25,192.168.179.1,fritz.box
+true,192.168.1.0/24,192.168.1.1,fritz.box
 ```
 
 ### 9. AAAA-Block aktivieren (Kernpunkt dieses Repos)
@@ -224,8 +224,8 @@ Da im Netz kein IPv6 läuft, sollen AAAA-Anfragen sofort mit NODATA beantwortet 
 Test:
 
 ```bash
-dig heimdall.phytech.de A    @192.168.179.30   # → 192.168.179.20
-dig heimdall.phytech.de AAAA @192.168.179.30   # → NODATA, ANSWER: 0
+dig heimdall.example.lan A    @192.168.1.10   # → 192.168.1.20
+dig heimdall.example.lan AAAA @192.168.1.10   # → NODATA, ANSWER: 0
 ```
 
 Mehr Details inklusive Hintergrund: [pihole/README.md](pihole/README.md).
@@ -243,7 +243,7 @@ sudo pihole reloaddns
 
 Damit alle Geräte den Pi als DNS nutzen:
 
-Fritz!Box-UI → **Heimnetz → Netzwerk → Netzwerkeinstellungen → IPv4-Konfiguration → Lokaler DNS-Server** → `192.168.179.30`.
+Fritz!Box-UI → **Heimnetz → Netzwerk → Netzwerkeinstellungen → IPv4-Konfiguration → Lokaler DNS-Server** → `192.168.1.10`.
 
 Ab jetzt fließt aller DNS-Verkehr im Netz über den Pi.
 
@@ -252,10 +252,10 @@ Ab jetzt fließt aller DNS-Verkehr im Netz über den Pi.
 Auf einem beliebigen Client:
 
 ```bash
-nslookup heimdall.phytech.de
-# → 192.168.179.20 (über 192.168.179.30)
+nslookup heimdall.example.lan
+# → 192.168.1.20 (über 192.168.1.10)
 
-nslookup -type=AAAA heimdall.phytech.de
+nslookup -type=AAAA heimdall.example.lan
 # → keine Adresse / NODATA
 ```
 
