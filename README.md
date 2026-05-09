@@ -166,8 +166,8 @@ Der einfachste Weg: relevante Settings über die Web-UI nachziehen (siehe [pihol
 
 ```bash
 # Repo klonen
-git clone https://github.com/<dein-user>/homelab-dns.git
-cd homelab-dns
+git clone https://github.com/Phydran6/Homelab-DNS-via-Pi-Hole.git
+cd Homelab-DNS-via-Pi-Hole
 
 # Pihole stoppen
 sudo systemctl stop pihole-FTL
